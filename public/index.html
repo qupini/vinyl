@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Картотека виниловых пластинок</title>
+  <style>
+  .modal {
+    display: none; /* Скрыть модальное окно по умолчанию */
+    position: fixed; /* Оставаться на месте даже при прокрутке */
+    z-index: 1; /* Сидеть над всеми другими элементами */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Включить прокрутку, если нужно */
+    background-color: rgb(0,0,0); /* Цвет фона */
+    background-color: rgba(0,0,0,0.4); /* Черный с непрозрачностью */
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% сверху и по центру */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Можете настроить ширину */
+  }
+
+  .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close-button:hover,
+  .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  </style>
+
+</head>
+<body>
+  <h1>Картотека виниловых пластинок</h1>
+  <button id="add-vinyl-button">Добавить</button>
+  <ul id="vinyl-list">
+    <!-- Список пластинок будет сюда вставлен с помощью JavaScript -->
+  </ul>
+
+  <div id="add-vinyl-form" class="modal">
+    <div class="modal-content">
+      <span class="close-button">×</span>
+      <h2>Добавить пластинку</h2>
+      <form id="new-vinyl">
+        <input type="text" id="vinyl-title" name="vinyl_title" placeholder="Название пластинки" required><br>
+        <input type="number" id="vinyl-releaseyear" name="vinyl_releaseyear" placeholder="Год релиза"><br>
+        <input type="text" id="vinyl-catalog-num" name="vinyl_catalog_num" placeholder="Каталожный номер"><br>
+        <input type="number" id="vinyl-rpm" name="vinyl_rpm" placeholder="RPM"><br>
+        <input type="text" id="vinyl-manufacturer" name="vinyl_manufacturer" placeholder="Производитель"><br>
+        <textarea id="vinyl-comments" name="vinyl_comments" placeholder="Описание"></textarea><br>
+        <select id="vinyl-type" name="vinyl_type">
+          <option value="">Выберите тип пластинки...</option>
+          <option value="album">Альбом</option>
+          <option value="single">Сингл</option>
+          <option value="ep">EP</option>
+          <option value="collection">Сборник</option>
+        </select><br>
+        <button type="submit">Подтвердить</button>
+      </form>
+      
+    </div>
+  </div>
+  
+</body>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  fetch('/vinyls')
+    .then(response => response.json())
+    .then(data => {
+      const list = document.getElementById('vinyl-list');
+      data.forEach(vinyl => {
+        const listItem = document.createElement('li');
+        listItem.textContent = vinyl.vinyl_title;
+        list.appendChild(listItem);
+      });
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+// Получаем модальное окно
+var modal = document.getElementById("add-vinyl-form");
+
+// Получаем кнопку, которая открывает модальное окно
+var btn = document.getElementById("add-vinyl-button");
+
+// Получаем элемент <span>, который закрывает модальное окно
+var span = document.getElementsByClassName("close-button")[0];
+
+// При клике на кнопку открыть модальное окно
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// При клике на <span> (x), закрыть модальное окно
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// При клике вне модального окна, оно закроется
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+document.getElementById('new-vinyl').addEventListener('submit', function(event) {
+  event.preventDefault(); // Предотвратить стандартное поведение отправки формы
+
+  // Получите значения из полей формы
+  const formData = {
+    vinyl_title: document.getElementById('vinyl-title').value,
+    vinyl_releaseyear: document.getElementById('vinyl-releaseyear').value,
+    vinyl_catalog_num: document.getElementById('vinyl-catalog-num').value,
+    vinyl_rpm: document.getElementById('vinyl-rpm').value,
+    vinyl_manufacturer: document.getElementById('vinyl-manufacturer').value,
+    vinyl_comments: document.getElementById('vinyl-comments').value,
+    vinyl_type: document.getElementById('vinyl-type').value
+  };
+
+  // Отправьте данные на сервер
+  fetch('/vinyls', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+  .then(response => response.json())
+  .then(vinyl => {
+    const list = document.getElementById('vinyl-list');
+    const listItem = document.createElement('li');
+    listItem.textContent = vinyl.vinyl_title; // Предполагаем, что сервер возвращает объект с ключом vinyl_title
+    list.appendChild(listItem);
+    
+    // Закрыть модальное окно
+    modal.style.display = "none";
+  })
+  .catch(error => console.error('Error:', error));
+});
+
+
+
+</script>
+</html>
