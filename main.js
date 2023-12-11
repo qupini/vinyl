@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.static('public')); // Предоставить статические файлы из папки public
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(__dirname + '/public/vinyl.html');
 });
 
 app.get('/vinyls', async (req, res) => {
