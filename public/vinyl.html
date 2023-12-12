@@ -39,6 +39,10 @@
     text-decoration: none;
     cursor: pointer;
   }
+
+  .gear-icon {
+  cursor: pointer; /* Курсор будет меняться на указатель (активный) при наведении */
+  }
   </style>
 
 </head>
@@ -70,6 +74,20 @@
         <button type="submit">Подтвердить</button>
       </form>
       
+      
+    </div>
+  </div>
+
+  <div id="add-track-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">×</span>
+      <h2>Добавить трек</h2>
+      <form id="add-track-form">
+        <input type="hidden" id="track-vinyl-id" name="vinyl_id">
+        <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
+        <!-- Добавьте здесь другие поля для информации о треке -->
+        <button type="submit">Добавить трек</button>
+      </form>
     </div>
   </div>
   
@@ -81,9 +99,17 @@
     .then(response => response.json())
     .then(data => {
       const list = document.getElementById('vinyl-list');
+      list.innerHTML = ''; //????????????????????????????????????
       data.forEach(vinyl => {
         const listItem = document.createElement('li');
         listItem.textContent = vinyl.vinyl_title;
+
+        // Значок шестеренки для добавления треков
+        const gearIcon = document.createElement('span');
+        gearIcon.classList.add('gear-icon');
+        gearIcon.innerHTML = ' &#9881;'; // Пример символа шестеренки, используйте соответствующий значок
+        gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
+        listItem.appendChild(gearIcon); //?нужно ли оставить или убрать
         list.appendChild(listItem);
       });
     })
@@ -104,17 +130,34 @@ btn.onclick = function() {
   modal.style.display = "block";
 }
 
+ var closeTrackModal = document.querySelector("#add-track-modal .close-button");
+
+  // Обработчик событий для закрытия модального окна добавления треков
+  closeTrackModal.onclick = function() {
+    document.getElementById('add-track-modal').style.display = 'none';
+  }
+
 // При клике на <span> (x), закрыть модальное окно
 span.onclick = function() {
   modal.style.display = "none";
 }
 
 // При клике вне модального окна, оно закроется
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+window.onclick = function(event) {  //провверить потом
+  if (event.target == document.getElementById('add-vinyl-form')) {
+    document.getElementById('add-vinyl-form').style.display = 'none';
+  }
+  if (event.target == document.getElementById('add-track-modal')) {
+    document.getElementById('add-track-modal').style.display = 'none';
   }
 }
+
+
+function openTrackModal(vinylId) {
+  document.getElementById('track-vinyl-id').value = vinylId;
+  document.getElementById('add-track-modal').style.display = 'block';
+}
+
 
 document.getElementById('new-vinyl').addEventListener('submit', function(event) {
   event.preventDefault(); // Предотвратить стандартное поведение отправки формы
@@ -143,13 +186,57 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     const list = document.getElementById('vinyl-list');
     const listItem = document.createElement('li');
     listItem.textContent = vinyl.vinyl_title; // Предполагаем, что сервер возвращает объект с ключом vinyl_title
+    const gearIcon = document.createElement('span');
+    gearIcon.classList.add('gear-icon');
+    gearIcon.innerHTML = ' &#9881'; // Используйте желаемый символ шестеренки
+    gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
+    listItem.appendChild(gearIcon);
     list.appendChild(listItem);
+
+    openTrackModal(vinyl.vinyl_id);
     
     // Закрыть модальное окно
-    modal.style.display = "none";
+    document.getElementById('add-vinyl-form').style.display = 'none';
   })
   .catch(error => console.error('Error:', error));
 });
+
+document.getElementById('add-track-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const trackFormData = new FormData(event.target);
+  const trackData = {
+    vinyl_id: document.getElementById('track-vinyl-id').value,
+    track_title: trackFormData.get('track_title'),
+    // Добавьте сюда другие поля трека, если они есть
+  };
+
+  fetch('/tracks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(trackData),
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Обработка успешного добавления трека
+    console.log('Трек успешно добавлен:', data);
+    // Здесь вы можете обновить список треков для пластинки, если у вас есть такая логика
+    // Например, добавить новый трек в список на странице
+
+    // Показать сообщение об успешном добавлении
+    alert("Трек успешно добавлен!");
+
+    // Закрыть модальное окно добавления треков
+    document.getElementById('add-track-modal').style.display = 'none';
+  })
+  .catch(error => {
+    console.error('Ошибка при добавлении трека:', error);
+    alert("Произошла ошибка при добавлении трека.");
+  });
+});
+
 
 
 
