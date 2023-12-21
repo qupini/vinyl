@@ -78,18 +78,28 @@
     </div>
   </div>
 
-  <div id="add-track-modal" class="modal">
+  <!-- Модальное окно для добавления треков -->
+<div id="add-track-modal" class="modal">
     <div class="modal-content">
       <span class="close-button">×</span>
-      <h2>Добавить трек</h2>
-      <form id="add-track-form">
-        <input type="hidden" id="track-vinyl-id" name="vinyl_id">
-        <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
-        <!-- Добавьте здесь другие поля для информации о треке -->
-        <button type="submit">Добавить трек</button>
+      <h2>Добавить треки</h2>
+
+      <form id="add-tracks-form">
+        <div id="tracks-container">
+          <!-- Здесь будут добавлены поля для треков -->
+          <div class="track-entry">
+            <input type="hidden" id="track-vinyl-id" name="vinyl_id">
+            <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
+          </div>
+
+        </div>
+        <button type="button" id="add-more-tracks">Добавить ещё трек</button><br>
+        <button type="submit">Добавить треки</button>
       </form>
+
     </div>
   </div>
+
   
 </body>
 
@@ -116,48 +126,62 @@
     .catch(error => console.error('Error:', error));
 });
 
-// Получаем модальное окно
-var modal = document.getElementById("add-vinyl-form");
-
-// Получаем кнопку, которая открывает модальное окно
-var btn = document.getElementById("add-vinyl-button");
-
-// Получаем элемент <span>, который закрывает модальное окно
-var span = document.getElementsByClassName("close-button")[0];
-
-// При клике на кнопку открыть модальное окно
-btn.onclick = function() {
-  modal.style.display = "block";
+// Функция для открытия модального окна
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  modal.style.display = 'block';
 }
 
- var closeTrackModal = document.querySelector("#add-track-modal .close-button");
-
-  // Обработчик событий для закрытия модального окна добавления треков
-  closeTrackModal.onclick = function() {
-    document.getElementById('add-track-modal').style.display = 'none';
-  }
-
-// При клике на <span> (x), закрыть модальное окно
-span.onclick = function() {
-  modal.style.display = "none";
+// Функция для закрытия модального окна
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  modal.style.display = 'none';
 }
 
-// При клике вне модального окна, оно закроется
-window.onclick = function(event) {  //провверить потом
-  if (event.target == document.getElementById('add-vinyl-form')) {
-    document.getElementById('add-vinyl-form').style.display = 'none';
-  }
-  if (event.target == document.getElementById('add-track-modal')) {
-    document.getElementById('add-track-modal').style.display = 'none';
-  }
+// Функция для добавления новых полей для треков
+function addTrackEntry() {
+  const container = document.getElementById('tracks-container');
+  const newTrackDiv = document.createElement('div');
+  newTrackDiv.className = 'track-entry';
+  newTrackDiv.innerHTML = `
+    <input type="hidden" id="track-vinyl-id" name="vinyl_id">
+    <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
+  `;
+  container.appendChild(newTrackDiv);
 }
+
+// Добавление обработчика события для кнопки добавления новых полей треков
+document.getElementById('add-more-tracks').addEventListener('click', addTrackEntry);
+
+document.getElementById('add-vinyl-button').onclick = function() {
+  openModal('add-vinyl-form');
+};
+
+
+document.querySelectorAll('.close-button').forEach(button => {
+  button.onclick = function() {
+    closeModal(button.closest('.modal').id);
+  }
+});
+
+
+window.onclick = function(event) {
+  if (event.target.classList.contains('modal')) {
+    closeModal(event.target.id);
+    document.getElementById('new-vinyl').reset();
+  }
+};
 
 
 function openTrackModal(vinylId) {
-  document.getElementById('track-vinyl-id').value = vinylId;
-  document.getElementById('add-track-modal').style.display = 'block';
-}
+  // Очистите контейнер треков перед открытием модального окна
+  const tracksContainer = document.getElementById('tracks-container');
+  tracksContainer.innerHTML = '';
+  addTrackEntry(); // Добавляем одно поле ввода при открытии модального окна
 
+  document.getElementById('track-vinyl-id').value = vinylId;
+  openModal('add-track-modal');
+}
 
 document.getElementById('new-vinyl').addEventListener('submit', function(event) {
   event.preventDefault(); // Предотвратить стандартное поведение отправки формы
@@ -196,45 +220,45 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     openTrackModal(vinyl.vinyl_id);
     
     // Закрыть модальное окно
-    document.getElementById('add-vinyl-form').style.display = 'none';
+    closeModal('add-vinyl-form');
+    document.getElementById('new-vinyl').reset();
   })
   .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('add-track-form').addEventListener('submit', function(event) {
+document.getElementById('add-tracks-form').addEventListener('submit', function(event) {
   event.preventDefault();
 
-  const trackFormData = new FormData(event.target);
-  const trackData = {
-    vinyl_id: document.getElementById('track-vinyl-id').value,
-    track_title: trackFormData.get('track_title'),
-    // Добавьте сюда другие поля трека, если они есть
-  };
+  const vinylId = document.getElementById('track-vinyl-id').value;
+  const trackTitles = document.querySelectorAll('input[name="track_title"]');
+  
+  const tracks = Array.from(trackTitles).map(input => {
+    return {
+      vinyl_id: vinylId,
+      track_title: input.value
+    };
+  });
 
   fetch('/tracks', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(trackData),
+    body: JSON.stringify(tracks),
   })
-  .then(response => response.json())
   .then(data => {
-    // Обработка успешного добавления трека
-    console.log('Трек успешно добавлен:', data);
-    // Здесь вы можете обновить список треков для пластинки, если у вас есть такая логика
-    // Например, добавить новый трек в список на странице
+  console.log(data.message); // Правильно обрабатываем и выводим сообщение от сервера
+  console.log('Closing modal now');
+  closeModal('add-track-modal');
+  document.getElementById('add-tracks-form').reset();
 
-    // Показать сообщение об успешном добавлении
-    alert("Трек успешно добавлен!");
+  // Возможно, вы захотите обновить список треков на странице...
+})
+.then(response => response.json())
 
-    // Закрыть модальное окно добавления треков
-    document.getElementById('add-track-modal').style.display = 'none';
-  })
-  .catch(error => {
-    console.error('Ошибка при добавлении трека:', error);
-    alert("Произошла ошибка при добавлении трека.");
-  });
+.catch(error => {
+  console.error('Ошибка при добавлении треков:', error);
+});
 });
 
 

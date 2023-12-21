@@ -64,26 +64,34 @@ app.post('/vinyls', async (req, res) => {
 
 
 app.post('/tracks', async (req, res) => {
-  try {
-    const { vinyl_id, track_title } = req.body;
-
-    // Добавляем трек в таблицу `tracks`
-    const insertTrackText = 'INSERT INTO tracks (track_title) VALUES ($1) RETURNING track_id';
-    const newTrack = await pool.query(insertTrackText, [track_title]);
-
-    // Получаем ID только что добавленного трека
-    const track_id = newTrack.rows[0].track_id;
-
-    // Связываем трек с пластинкой в таблице `vinyls2tracks`
-    const insertVinyl2TracksText = 'INSERT INTO vinyls2tracks (vinyl_id, track_id) VALUES ($1, $2)';
-    await pool.query(insertVinyl2TracksText, [vinyl_id, track_id]);
-
-    res.json(newTrack.rows[0]); // Отправляем обратно информацию о добавленном треке
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+    try {
+      // Предполагается, что req.body является массивом треков
+      for (const track of req.body) {
+        const { vinyl_id, track_title } = track;
+  
+        if (!vinyl_id || !track_title) {
+          return res.status(400).send('Vinyl ID and track title are required');
+        }
+  
+        // Вставляем трек в таблицу `tracks`
+        const insertTrackText = 'INSERT INTO tracks (track_title) VALUES ($1) RETURNING track_id';
+        const newTrack = await pool.query(insertTrackText, [track_title]);
+  
+        // Получаем ID только что добавленного трека
+        const track_id = newTrack.rows[0].track_id;
+  
+        // Связываем трек с пластинкой в таблице `vinyls2tracks`
+        const insertVinyl2TracksText = 'INSERT INTO vinyls2tracks (vinyl_id, track_id) VALUES ($1, $2)';
+        await pool.query(insertVinyl2TracksText, [vinyl_id, track_id]);
+      }
+  
+      res.json({ message: 'Tracks added successfully' }); 
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  });
+  
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
