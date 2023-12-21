@@ -40,18 +40,78 @@
     cursor: pointer;
   }
 
+  .container {
+  display: grid;
+  grid-template-columns: 1fr 3fr; /* 1 часть для фильтров, 3 части для пластинок */
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px; /* Можете установить максимальную ширину */
+  margin: auto; /* Центрирование контейнера на странице */
+}
+
+.filters {
+  grid-column: 1 / 2; /* Фильтры будут в первой колонке */
+}
+
   .gear-icon {
   cursor: pointer; /* Курсор будет меняться на указатель (активный) при наведении */
   }
+
+  .grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Теперь будет только 3 колонки */
+  gap: 20px;
+  padding: 20px;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.grid-item img {
+  max-width: 100%; /* убедитесь, что изображения масштабируются правильно */
+  border-radius: 10px; /* если хотите скругленные углы */
+}
+
+.grid-item p {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.grid-item .title {
+  margin-top: 10px;
+}
+
+.grid-item .gear-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.vinyl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Три пластинки в строке */
+  gap: 20px;
+}
+
   </style>
 
 </head>
 <body>
   <h1>Картотека виниловых пластинок</h1>
   <button id="add-vinyl-button">Добавить</button>
-  <ul id="vinyl-list">
-    <!-- Список пластинок будет сюда вставлен с помощью JavaScript -->
-  </ul>
+  
+  <div class="container">
+    <div class="filters">
+      
+    </div>
+    <div id="vinyl-grid" class="grid-container">
+      <!-- Элементы сетки будут добавлены здесь через JavaScript -->
+    </div>
+  </div>
 
   <div id="add-vinyl-form" class="modal">
     <div class="modal-content">
@@ -108,19 +168,35 @@
   fetch('/vinyls')
     .then(response => response.json())
     .then(data => {
-      const list = document.getElementById('vinyl-list');
-      list.innerHTML = ''; //????????????????????????????????????
+      const grid = document.getElementById('vinyl-grid');
+      grid.innerHTML = '';
+
       data.forEach(vinyl => {
-        const listItem = document.createElement('li');
-        listItem.textContent = vinyl.vinyl_title;
+        const gridItem = document.createElement('div');
+        gridItem.className = 'grid-item';
+
+        const image = document.createElement('img');
+        image.src = 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&auto=format&w=688';
+        image.alt = vinyl.vinyl_title;
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'title';
+
+        const title = document.createElement('p');
+        title.innerText = vinyl.vinyl_title;
+        titleDiv.appendChild(title);
+        // Append the p element to the title div
 
         // Значок шестеренки для добавления треков
         const gearIcon = document.createElement('span');
         gearIcon.classList.add('gear-icon');
         gearIcon.innerHTML = ' &#9881;'; // Пример символа шестеренки, используйте соответствующий значок
         gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
-        listItem.appendChild(gearIcon); //?нужно ли оставить или убрать
-        list.appendChild(listItem);
+
+        gridItem.appendChild(image);
+        gridItem.appendChild(titleDiv);
+        gridItem.appendChild(gearIcon);
+        grid.appendChild(gridItem);
       });
     })
     .catch(error => console.error('Error:', error));
@@ -207,15 +283,34 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
   })
   .then(response => response.json())
   .then(vinyl => {
-    const list = document.getElementById('vinyl-list');
-    const listItem = document.createElement('li');
-    listItem.textContent = vinyl.vinyl_title; // Предполагаем, что сервер возвращает объект с ключом vinyl_title
+    const grid = document.getElementById('vinyl-grid');
+    const gridItem = document.createElement('div');
+    gridItem.className = 'grid-item';
+
+    const image = document.createElement('img');
+    // Set the path to the image or use a placeholder if the image is missing
+    image.src = vinyl.vinyl_img || 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&w=594';
+    image.alt = 'Vinyl Image';
+
+    // Create a new div for the title
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'title';
+
+    const title = document.createElement('p');
+    title.textContent = vinyl.vinyl_title;
+    titleDiv.appendChild(title); // Append the p element to the title div
+
+    // Append the image and the new title div to the grid item
+    gridItem.appendChild(image);
+    gridItem.appendChild(titleDiv);
+    grid.appendChild(gridItem);
+
     const gearIcon = document.createElement('span');
     gearIcon.classList.add('gear-icon');
     gearIcon.innerHTML = ' &#9881'; // Используйте желаемый символ шестеренки
     gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
-    listItem.appendChild(gearIcon);
-    list.appendChild(listItem);
+    gridItem.appendChild(gearIcon);
+    grid.appendChild(gridItem);
 
     openTrackModal(vinyl.vinyl_id);
     
