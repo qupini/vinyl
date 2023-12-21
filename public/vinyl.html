@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Картотека виниловых пластинок</title>
   <style>
+
+    @font-face {
+    font-family: 'ElSquare';
+    src: url('public/Jurij.ttf') format('truetype');
+    }
+
+    @font-face {
+    font-family: 'Moskino';
+    src: url('fonts/moskino.otf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
   .modal {
     display: none; /* Скрыть модальное окно по умолчанию */
     position: fixed; /* Оставаться на месте даже при прокрутке */
@@ -65,11 +79,11 @@
 }
 
 .grid-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 
 .grid-item img {
   max-width: 100%; /* убедитесь, что изображения масштабируются правильно */
@@ -83,6 +97,9 @@
 
 .grid-item .title {
   margin-top: 10px;
+  font-family: 'Moskino';
+	font-weight: bold;
+  font-size: 30px;
 }
 
 .grid-item .gear-icon {
@@ -96,12 +113,20 @@
   grid-template-columns: repeat(3, 1fr); /* Три пластинки в строке */
   gap: 20px;
 }
+h1 {
+	font-family: 'Moskino';
+	font-weight: bold;
+  font-size: 70px;
+  text-align: center;
+  margin-top: 60px;
+
+}
 
   </style>
 
 </head>
 <body>
-  <h1>Картотека виниловых пластинок</h1>
+  <h1>Виниловые пластинки</h1>
   <button id="add-vinyl-button">Добавить</button>
   
   <div class="container">
