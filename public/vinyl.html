@@ -189,7 +189,10 @@ h1 {
 </body>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+
+//_______________________________________________ОТОБРАЖЕНИЕ ПЛАСТИНОК НА ГЛАВНОЙ СТРАНИЦЕ____________________________________________//
+  
+document.addEventListener('DOMContentLoaded', function() {
   fetch('/vinyls')
     .then(response => response.json())
     .then(data => {
@@ -207,9 +210,11 @@ h1 {
         const titleDiv = document.createElement('div');
         titleDiv.className = 'title';
 
-        const title = document.createElement('p');
-        title.innerText = vinyl.vinyl_title;
-        titleDiv.appendChild(title);
+
+        const titleLink = document.createElement('a'); // Создаем элемент ссылки
+        titleLink.href = `/vinyl/${vinyl.vinyl_id}`; // Путь к странице пластинки, например /vinyl/1
+        titleLink.innerText = vinyl.vinyl_title; // Текст ссылки
+        titleDiv.appendChild(titleLink); 
 
         // Значок шестеренки для добавления треков
         const gearIcon = document.createElement('span');
@@ -225,18 +230,37 @@ h1 {
     })
     .catch(error => console.error('Error:', error));
 });
+//____________________________________________________________________________________________________________________________________//
 
-// Функция для открытия модального окна
+//___________________________________________________РАБОТА С МОДАЛЬНЫМИ ОКНАМИ_______________________________________________________//
+// Функция для открытия модального окна по id
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
   modal.style.display = 'block';
 }
 
-// Функция для закрытия модального окна
+// Функция для закрытия модального окна по id
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   modal.style.display = 'none';
 }
+
+// Функция для закрытия модального окна при нажатии на ×
+document.querySelectorAll('.close-button').forEach(button => {
+  button.onclick = function() {
+    closeModal(button.closest('.modal').id);
+  }
+});
+
+// Функция для закрытия модального окна при клике вне  
+window.onclick = function(event) {
+  if (event.target.classList.contains('modal')) {
+    closeModal(event.target.id);
+    document.getElementById('new-vinyl').reset();
+  }
+};
+//____________________________________________________________________________________________________________________________________//
+
 
 // Функция для добавления новых полей для треков
 function addTrackEntry() {
@@ -260,21 +284,6 @@ document.getElementById('add-more-tracks').addEventListener('click', addTrackEnt
 
 document.getElementById('add-vinyl-button').onclick = function() {
   openModal('add-vinyl-form');
-};
-
-
-document.querySelectorAll('.close-button').forEach(button => {
-  button.onclick = function() {
-    closeModal(button.closest('.modal').id);
-  }
-});
-
-
-window.onclick = function(event) {
-  if (event.target.classList.contains('modal')) {
-    closeModal(event.target.id);
-    document.getElementById('new-vinyl').reset();
-  }
 };
 
 
@@ -324,10 +333,13 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     // Create a new div for the title
     const titleDiv = document.createElement('div');
     titleDiv.className = 'title';
+    
 
-    const title = document.createElement('p');
-    title.textContent = vinyl.vinyl_title;
-    titleDiv.appendChild(title); // Append the p element to the title div
+    const titleLink = document.createElement('a'); // Создаем элемент ссылки
+    titleLink.href = `/vinyl/${vinyl.vinyl_id}`; // Путь к странице пластинки, например /vinyl/1
+    titleLink.innerText = vinyl.vinyl_title; // Текст ссылки
+    titleDiv.appendChild(titleLink); 
+
 
     // Append the image and the new title div to the grid item
     gridItem.appendChild(image);

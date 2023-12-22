@@ -15,6 +15,7 @@ const pool = new Pool({
 
 app.use(express.json());
 app.use(express.static('public')); // Предоставить статические файлы из папки public
+app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/vinyl.html');
@@ -92,6 +93,34 @@ app.post('/tracks', async (req, res) => {
     }
   });
   
+  // Добавляем новый маршрут для деталей пластинки
+app.get('/vinyl/:vinylId', async (req, res) => {
+  try {
+    const vinylId = req.params.vinylId;
+
+    // Получаем информацию о пластинке
+    const vinylQuery = 'SELECT * FROM vinyls WHERE vinyl_id = $1';
+    const vinylResult = await pool.query(vinylQuery, [vinylId]);
+
+    if (vinylResult.rows.length === 0) {
+      return res.status(404).send("Vinyl not found");
+    }
+    const vinyl = vinylResult.rows[0];
+
+    // Получаем список треков для пластинки
+    const tracksQuery = 'SELECT tracks.track_title FROM tracks JOIN vinyls2tracks ON tracks.track_id = vinyls2tracks.track_id WHERE vinyls2tracks.vinyl_id = $1';
+    const tracksResult = await pool.query(tracksQuery, [vinylId]);
+    const tracks = tracksResult.rows;
+
+    // Отправляем данные обратно клиенту
+    res.render('vinyl_details', { vinyl: vinyl, tracks: tracks });
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
