@@ -210,7 +210,6 @@ h1 {
         const title = document.createElement('p');
         title.innerText = vinyl.vinyl_title;
         titleDiv.appendChild(title);
-        // Append the p element to the title div
 
         // Значок шестеренки для добавления треков
         const gearIcon = document.createElement('span');
@@ -247,8 +246,13 @@ function addTrackEntry() {
   newTrackDiv.innerHTML = `
     <input type="hidden" id="track-vinyl-id" name="vinyl_id">
     <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
+    <button type="button" class="remove-track">Удалить трек</button>
   `;
   container.appendChild(newTrackDiv);
+
+  newTrackDiv.querySelector('.remove-track').addEventListener('click', function() {
+    this.parentElement.remove(); // Remove the track entry
+  });
 }
 
 // Добавление обработчика события для кнопки добавления новых полей треков
