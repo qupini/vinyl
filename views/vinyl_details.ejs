@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Остальная часть head -->
+    <title><%= vinyl.vinyl_title %></title>
+</head>
+<body>
+    <h1><%= vinyl.vinyl_title %></h1>
+    <div>Год выпуска: <%= vinyl.vinyl_releaseyear %></div>
+    <!-- и так далее для всех данных о пластинке -->
+    <ul id="tracklist">
+        <% tracks.forEach(track => { %>
+            <li><%= track.track_title %></li>
+        <% }); %>
+    </ul>
+</body>
+</html>
