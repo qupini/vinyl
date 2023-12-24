@@ -48,6 +48,48 @@
     font-display: swap;
     }
 
+    @font-face {
+      font-family: "Dazed";
+      src: url('fonts/DazedandCondensed-Bold.otf');
+      font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Geson";
+      src: url('fonts/GesonBamerDemo.ttf');
+      font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+
+    @font-face {
+      font-family: "GRUNT";
+      src: url('fonts/GRUNT_v1-Regular.otf');
+      font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Kirpich";
+      src: url('fonts/kirpich.otf');
+      font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+    @font-face {
+      font-family: "TTTrailers";
+      src: url('fonts/TT Trailers Trial Bold Italic.ttf');
+      font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+
   .modal {
     display: none; /* Скрыть модальное окно по умолчанию */
     position: fixed; /* Оставаться на месте даже при прокрутке */
@@ -144,8 +186,7 @@
 }
 h1 {
 	font-family: 'Donpo';
-	font-weight: bold;
-  font-size: 70px;
+  font-size: 60px;
   text-align: center;
   margin-top: 80px;
   color: rgb(0, 0, 0);
@@ -231,31 +272,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
       data.forEach(vinyl => {
         const gridItem = document.createElement('div');
-        gridItem.className = 'grid-item';
+    gridItem.className = 'grid-item';
 
-        const image = document.createElement('img');
-        image.src = 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&auto=format&w=688';
-        image.alt = vinyl.vinyl_title;
+    const imageLink = document.createElement('a');
+    imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
+    imageLink.className = 'image-link';
 
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'title';
+    const image = document.createElement('img');
+    // Set the path to the image or use a placeholder if the image is missing
+    image.src = vinyl.vinyl_img || 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&w=594';
+    image.alt = 'Vinyl Image';
 
+    // Create a new div for the title
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'title';
 
-        const titleLink = document.createElement('a'); // Создаем элемент ссылки
-        titleLink.href = `/vinyl/${vinyl.vinyl_id}`; // Путь к странице пластинки, например /vinyl/1
-        titleLink.innerText = vinyl.vinyl_title; // Текст ссылки
-        titleDiv.appendChild(titleLink); 
+    const title = document.createElement('p');
+    title.innerText = vinyl.vinyl_title;
+    titleDiv.appendChild(title);
+  
 
-        // Значок шестеренки для добавления треков
-        const gearIcon = document.createElement('span');
-        gearIcon.classList.add('gear-icon');
-        gearIcon.innerHTML = ' &#9881;'; // Пример символа шестеренки, используйте соответствующий значок
-        gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
+    // Append the image and the new title div to the grid item
+    imageLink.appendChild(image);
+    gridItem.appendChild(imageLink);
+    gridItem.appendChild(titleDiv);
+    grid.appendChild(gridItem);
 
-        gridItem.appendChild(image);
-        gridItem.appendChild(titleDiv);
-        gridItem.appendChild(gearIcon);
-        grid.appendChild(gridItem);
+    const gearIcon = document.createElement('span');
+    gearIcon.classList.add('gear-icon');
+    gearIcon.innerHTML = ' &#9881'; // Используйте желаемый символ шестеренки
+    gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
+    gridItem.appendChild(gearIcon);
+    grid.appendChild(gridItem);
       });
     })
     .catch(error => console.error('Error:', error));
@@ -355,6 +403,10 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     const gridItem = document.createElement('div');
     gridItem.className = 'grid-item';
 
+    const imageLink = document.createElement('a');
+    imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
+    imageLink.className = 'image-link';
+
     const image = document.createElement('img');
     // Set the path to the image or use a placeholder if the image is missing
     image.src = vinyl.vinyl_img || 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&w=594';
@@ -363,16 +415,15 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     // Create a new div for the title
     const titleDiv = document.createElement('div');
     titleDiv.className = 'title';
-    
 
-    const titleLink = document.createElement('a'); // Создаем элемент ссылки
-    titleLink.href = `/vinyl/${vinyl.vinyl_id}`; // Путь к странице пластинки, например /vinyl/1
-    titleLink.innerText = vinyl.vinyl_title; // Текст ссылки
-    titleDiv.appendChild(titleLink); 
-
+    const title = document.createElement('p');
+    title.innerText = vinyl.vinyl_title;
+    titleDiv.appendChild(title);
+  
 
     // Append the image and the new title div to the grid item
-    gridItem.appendChild(image);
+    imageLink.appendChild(image);
+    gridItem.appendChild(imageLink);
     gridItem.appendChild(titleDiv);
     grid.appendChild(gridItem);
 

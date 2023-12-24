@@ -3,6 +3,24 @@
 <head>
     <!-- Остальная часть head -->
     <title><%= vinyl.vinyl_title %></title>
+    <style>
+        @font-face {
+            font-family: "Donpo";
+            src: url('fonts/moskino.otf');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        h1 {
+            font-family: 'Donpo';
+            font-size: 60px;
+            text-align: center;
+            margin-top: 80px;
+            color: rgb(0, 0, 0);
+        }
+
+    </style>
 </head>
 <body>
     <h1><%= vinyl.vinyl_title %></h1>
