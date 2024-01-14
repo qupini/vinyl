@@ -1,6 +1,8 @@
 // server.js
 const express = require('express');
 const { Pool } = require('pg');
+const iconv = require('iconv-lite');
+
 
 const app = express();
 const port = 3000;
@@ -127,6 +129,22 @@ app.post('/tracks', async (req, res) => {
       res.status(500).send('Server error');
     }
   });
+
+app.post('/encode', (req, res) => {
+  const text = req.body.text;
+  if (!text) {
+      return res.status(400).send("No text provided");
+  }
+
+  try {
+      const encodedBuffer = iconv.encode(text, 'win1251');
+      const percentEncoded = Array.from(encodedBuffer).map(b => '%' + b.toString(16).padStart(2, '0')).join('');
+      res.json({ encoded: percentEncoded });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send("Error encoding text");
+  }
+});  
   
   // Добавляем новый маршрут для деталей пластинки
 app.get('/vinyl/:vinylId', async (req, res) => {

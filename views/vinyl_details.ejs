@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/text-encoding@0.7.0/lib/encoding.js"></script>
     <!-- Остальная часть head -->
     <title><%= vinyl.vinyl_title %></title>
     <style>
@@ -36,12 +38,36 @@
     </ul>
     <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
     <button id="printQRCodeButton">Печать QR-кода</button>
+    <button id="sovsearch">Поиск по сайту sovmusic.ru</button>
 
     <script>
-        document.getElementById('printQRCodeButton').addEventListener('click', function() {
-            window.print();
-        });
+    document.getElementById('printQRCodeButton').addEventListener('click', function() {
+        window.print();
+    });
 
-    </script>
+
+    
+
+
+    document.getElementById('sovsearch').addEventListener('click', function() {
+    var vinylTitle = '<%= vinyl.vinyl_title %>';
+
+    fetch('/encode', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: vinylTitle })
+    })
+    .then(response => response.json())
+    .then(data => {
+        var searchUrl = 'http://www.sovmusic.ru/result.php?type=simple&searchterm=' + data.encoded + '&searchtype=name';
+        window.open(searchUrl, '_blank');
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
+
 </body>
 </html>
