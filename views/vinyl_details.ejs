@@ -4,25 +4,28 @@
     <!-- Остальная часть head -->
     <title><%= vinyl.vinyl_title %></title>
     <style>
-        @font-face {
-            font-family: "Donpo";
-            src: url('fonts/moskino.otf');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        h1 {
+        a {
             font-family: 'Donpo';
-            font-size: 60px;
             text-align: center;
             margin-top: 80px;
             color: rgb(0, 0, 0);
+            text-decoration: none;
         }
-
+        
+        @media print {
+            img {
+                display: block !important;
+                width: 100%;
+            }
+            
+            body * {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <h1><a href="/vinyl.html" >Виниловые пластинки</a></h1>
     <h1><%= vinyl.vinyl_title %></h1>
     <div>Год выпуска: <%= vinyl.vinyl_releaseyear %></div>
     <!-- и так далее для всех данных о пластинке -->
@@ -31,5 +34,14 @@
             <li><%= track.track_title %></li>
         <% }); %>
     </ul>
+    <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
+    <button id="printQRCodeButton">Печать QR-кода</button>
+
+    <script>
+        document.getElementById('printQRCodeButton').addEventListener('click', function() {
+            window.print();
+        });
+
+    </script>
 </body>
 </html>

@@ -17,6 +17,19 @@ app.use(express.json());
 app.use(express.static('public')); // Предоставить статические файлы из папки public
 app.set('view engine', 'ejs');
 
+
+const QRCode = require('qrcode');
+
+const generateQR = async (text) => {
+  try {
+    return await QRCode.toDataURL(text);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/vinyl.html');
 });
@@ -55,6 +68,28 @@ app.post('/vinyls', async (req, res) => {
         vinyl_type || null
       ]
     );
+
+    const vinylId = newVinyl.rows[0].vinyl_id;
+    console.log('создание новой пластинки');
+
+
+    // Генерация URL для QR-кода, который будет вести на страницу этой пластинки
+    const qrUrl = `https://8b61-176-96-246-29.ngrok-free.app/vinyl/${vinylId}` //`http://localhost:${port}/vinyl/${vinylId}`;
+    
+    // Генерация QR-кода
+    const qrCode = await generateQR(qrUrl);
+
+    // Обновление записи в базе данных с добавлением QR-кода
+    await pool.query(
+      'UPDATE vinyls SET vinyl_qr = $1 WHERE vinyl_id = $2',
+      [qrCode, vinylId]
+    );
+
+    // Добавление информации о QR-коде к объекту, который будет отправлен клиенту
+    const vinylWithQR = {
+      ...newVinyl.rows[0],
+      qr_code: qrCode
+    };
 
     res.json(newVinyl.rows[0]);
   } catch (err) {
