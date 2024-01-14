@@ -105,16 +105,25 @@ app.post('/tracks', async (req, res) => {
     try {
       // Предполагается, что req.body является массивом треков
       for (const track of req.body) {
-        const { vinyl_id, track_title } = track;
+        const { vinyl_id, track_title, track_author, track_performer, track_duration, track_featuring } = track;
   
         if (!vinyl_id || !track_title) {
           return res.status(400).send('Vinyl ID and track title are required');
         }
   
-        // Вставляем трек в таблицу `tracks`
-        const insertTrackText = 'INSERT INTO tracks (track_title) VALUES ($1) RETURNING track_id';
-        const newTrack = await pool.query(insertTrackText, [track_title]);
+        
   
+        const newTrack = await pool.query(
+          'INSERT INTO tracks (track_title, track_author, track_performer, track_duration, track_featuring) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+          [
+            track_title,
+            track_author || null,
+            track_performer || null,
+            track_duration || null,
+            track_featuring || null
+          ]
+        );
+
         // Получаем ID только что добавленного трека
         const track_id = newTrack.rows[0].track_id;
   
@@ -161,7 +170,7 @@ app.get('/vinyl/:vinylId', async (req, res) => {
     const vinyl = vinylResult.rows[0];
 
     // Получаем список треков для пластинки
-    const tracksQuery = 'SELECT tracks.track_title FROM tracks JOIN vinyls2tracks ON tracks.track_id = vinyls2tracks.track_id WHERE vinyls2tracks.vinyl_id = $1';
+    const tracksQuery = 'SELECT * FROM tracks JOIN vinyls2tracks ON tracks.track_id = vinyls2tracks.track_id WHERE vinyls2tracks.vinyl_id = $1';
     const tracksResult = await pool.query(tracksQuery, [vinylId]);
     const tracks = tracksResult.rows;
 

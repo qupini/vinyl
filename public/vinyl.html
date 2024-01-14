@@ -54,25 +54,27 @@
     </div>
   </div>
 
-  <!-- Модальное окно для добавления треков -->
+  <!-- Модальное окно для добавления песнюов -->
 <div id="add-track-modal" class="modal">
     <div class="modal-content">
       <span class="close-button">×</span>
-      <h2>Добавить треки</h2>
+      <h2>Добавить песни</h2>
 
       <form id="add-tracks-form">
         <div id="tracks-container">
-          <!-- Здесь будут добавлены поля для треков -->
+          <!-- Здесь будут добавлены поля для песен -->
           <div class="track-entry">
             <input type="hidden" id="track-vinyl-id" name="vinyl_id">
-            <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
+            <input type="text" id="track-title" name="track_title" placeholder="Название песни" required><br>
+            <input type="text" id="track-author" name="track_author" placeholder="Автор песни"><br>
+            <input type="text" id="track-performer" name="track_performer" placeholder="Название песни"><br>
+            <input type="text" id="track-duration" name="track_duration" placeholder="Длительность песни"><br>
+            <input type="text" id="track-featuring" name="track_featuring" placeholder="Название песни"><br>
           </div>
-
         </div>
-        <button type="button" id="add-more-tracks">Добавить ещё трек</button><br>
-        <button type="submit">Добавить треки</button>
+        <button type="button" id="add-more-tracks">Добавить ещё песню</button><br>
+        <button type="submit">Добавить песни</button>
       </form>
-
     </div>
   </div>
 
@@ -157,18 +159,22 @@ window.onclick = function(event) {
     document.getElementById('new-vinyl').reset();
   }
 };
-//_______________________________________ОТПРАВКА ДАННЫХ НА СЕРВЕР + ДОБАВЛЕНИЕ ТРЕКОВ ____________________________________________________//
+//_______________________________________ОТПРАВКА ДАННЫХ НА СЕРВЕР + ДОБАВЛЕНИЕ ПЕСЕН ____________________________________________________//
 
 
-// Функция для добавления новых полей для треков
+// Функция для добавления новых полей для песнюов
 function addTrackEntry() {
   const container = document.getElementById('tracks-container');
   const newTrackDiv = document.createElement('div');
   newTrackDiv.className = 'track-entry';
   newTrackDiv.innerHTML = `
     <input type="hidden" id="track-vinyl-id" name="vinyl_id">
-    <input type="text" id="track-title" name="track_title" placeholder="Название трека" required><br>
-    <button type="button" class="remove-track">Удалить трек</button>
+    <input type="text" id="track-title" name="track_title" placeholder="Название песни" required><br>
+    <input type="text" id="track-author" name="track_author" placeholder="Автор песни"><br>
+    <input type="text" id="track-performer" name="track_performer" placeholder="Название песни"><br>
+    <input type="text" id="track-duration" name="track_duration" placeholder="Длительность песни"><br>
+    <input type="text" id="track-featuring" name="track_featuring" placeholder="Название песни"><br>
+    <button type="button" class="remove-track">Удалить песню</button>
   `;
   container.appendChild(newTrackDiv);
 
@@ -177,7 +183,7 @@ function addTrackEntry() {
   });
 }
 
-// Добавление обработчика события для кнопки добавления новых полей треков
+// Добавление обработчика события для кнопки добавления новых полей песнюов
 document.getElementById('add-more-tracks').addEventListener('click', addTrackEntry);
 
 document.getElementById('add-vinyl-button').onclick = function() {
@@ -186,7 +192,7 @@ document.getElementById('add-vinyl-button').onclick = function() {
 
 
 function openTrackModal(vinylId) {
-  // Очистите контейнер треков перед открытием модального окна
+  // Очистите контейнер песен перед открытием модального окна
   const tracksContainer = document.getElementById('tracks-container');
   tracksContainer.innerHTML = '';
   addTrackEntry(); // Добавляем одно поле ввода при открытии модального окна
@@ -263,18 +269,21 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
   .catch(error => console.error('Error:', error));
 });
 
-
-// Отправка данных о треке на сервер
+// Отправка данных о песне на сервер
 document.getElementById('add-tracks-form').addEventListener('submit', function(event) {
   event.preventDefault();
 
   const vinylId = document.getElementById('track-vinyl-id').value;
-  const trackTitles = document.querySelectorAll('input[name="track_title"]');
+  const trackEntries = document.querySelectorAll('.track-entry');
   
-  const tracks = Array.from(trackTitles).map(input => {
+  const tracks = Array.from(trackEntries).map(entry => {
     return {
       vinyl_id: vinylId,
-      track_title: input.value
+      track_title: entry.querySelector('input[name="track_title"]').value,
+      track_author: entry.querySelector('input[name="track_author"]').value,
+      track_performer: entry.querySelector('input[name="track_performer"]').value,
+      track_duration: entry.querySelector('input[name="track_duration"]').value,
+      track_featuring: entry.querySelector('input[name="track_featuring"]').value,
     };
   });
 
@@ -285,19 +294,16 @@ document.getElementById('add-tracks-form').addEventListener('submit', function(e
     },
     body: JSON.stringify(tracks),
   })
+  .then(response => response.json())
   .then(data => {
-  console.log(data.message); // Правильно обрабатываем и выводим сообщение от сервера
-  console.log('Closing modal now');
-  closeModal('add-track-modal');
-  document.getElementById('add-tracks-form').reset();
-
-  // Возможно, вы захотите обновить список треков на странице...
-})
-.then(response => response.json())
-
-.catch(error => {
-  console.error('Ошибка при добавлении треков:', error);
-});
+    console.log(data.message); // Правильно обрабатываем и выводим сообщение от сервера
+    closeModal('add-track-modal');
+    document.getElementById('add-tracks-form').reset();
+    // Обновите список песен на странице, если необходимо
+  })
+  .catch(error => {
+    console.error('Ошибка при добавлении песен:', error);
+  });
 });
 
 
