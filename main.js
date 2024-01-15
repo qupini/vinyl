@@ -38,13 +38,25 @@ app.get('/', (req, res) => {
 
 app.get('/vinyls', async (req, res) => {
   try {
-    const vinyls = await pool.query('SELECT * FROM vinyls');
-    res.json(vinyls.rows);
+    let query = 'SELECT * FROM vinyls';
+    const search = req.query.search;
+
+    if (search) {
+      query += ` WHERE LOWER(vinyl_title) LIKE '%' || LOWER($1) || '%'`;
+      const vinyls = await pool.query(query, [search]);
+      console.log(vinyls.rows); // Добавьте эту строку для отладки
+      res.json(vinyls.rows);
+    } else {
+      const vinyls = await pool.query(query);
+      res.json(vinyls.rows);
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
+
+
 
 app.post('/vinyls', async (req, res) => {
   try {

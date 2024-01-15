@@ -22,6 +22,10 @@
 <body>
   <h1>Виниловые пластинки</h1>
   <button id="add-vinyl-button">Добавить</button>
+  <div class="search-container">
+      <input type="text" id="search-vinyl" placeholder="Поиск пластинок...">
+  </div>
+
   
   <div class="container">
     <div class="filters">
@@ -78,6 +82,52 @@
 //_______________________________________________ОТОБРАЖЕНИЕ ПЛАСТИНОК НА ГЛАВНОЙ СТРАНИЦЕ____________________________________________//
   
 document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('search-vinyl').addEventListener('input', function(e) {
+  const searchQuery = e.target.value.toLowerCase();
+  console.log('Поисковый запрос:', searchQuery); // Для отладки
+
+  // Добавляем задержку для оптимизации количества запросов к серверу
+  if (this.searchTimeout) {
+    clearTimeout(this.searchTimeout);
+  }
+
+  this.searchTimeout = setTimeout(() => {
+    fetch('/vinyls?search=' + searchQuery)
+      .then(response => response.json())
+      .then(data => {
+        const grid = document.getElementById('vinyl-grid');
+        grid.innerHTML = '';
+
+        data.forEach(vinyl => {
+  const gridItem = document.createElement('div');
+  gridItem.className = 'grid-item';
+
+  const imageLink = document.createElement('a');
+  imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
+  imageLink.className = 'image-link';
+
+  const image = document.createElement('img');
+  image.src = vinyl.vinyl_img || 'https://i.ibb.co/7NfrgGH/2112-q703-032-F-m004-c7-vinyl-record-covers-mockup-realistic-removebg.png';
+
+  const titleDiv = document.createElement('div');
+  titleDiv.className = 'title';
+
+  const title = document.createElement('p');
+  title.innerText = vinyl.vinyl_title;
+
+  titleDiv.appendChild(title);
+  imageLink.appendChild(image);
+  gridItem.appendChild(imageLink);
+  gridItem.appendChild(titleDiv);
+
+  document.getElementById('vinyl-grid').appendChild(gridItem);
+});
+
+      })
+      .catch(error => console.error('Error:', error));
+  }, 300); // задержка 300 мс
+});
+
   fetch('/vinyls')
     .then(response => response.json())
     .then(data => {
@@ -313,7 +363,9 @@ function formatTimeInput(event) {
     }
   }
 
-  document.getElementById('track-duration').addEventListener('input', formatTimeInput);
+
+
+
 
 
 </script>
