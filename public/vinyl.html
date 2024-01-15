@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Картотека виниловых пластинок</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 
   <style>
   @media (max-width: 600px) {
@@ -63,26 +66,15 @@
       <form id="add-tracks-form">
         <div id="tracks-container">
           <!-- Здесь будут добавлены поля для песен -->
-          <div class="track-entry">
-            <input type="hidden" id="track-vinyl-id" name="vinyl_id">
-            <input type="text" id="track-title" name="track_title" placeholder="Название песни" required><br>
-            <input type="text" id="track-author" name="track_author" placeholder="Автор песни"><br>
-            <input type="text" id="track-performer" name="track_performer" placeholder="Название песни"><br>
-            <input type="text" id="track-duration" name="track_duration" placeholder="Длительность песни"><br>
-            <input type="text" id="track-featuring" name="track_featuring" placeholder="Название песни"><br>
-          </div>
         </div>
         <button type="button" id="add-more-tracks">Добавить ещё песню</button><br>
         <button type="submit">Добавить песни</button>
       </form>
     </div>
   </div>
-
-  
 </body>
 
 <script>
-
 //_______________________________________________ОТОБРАЖЕНИЕ ПЛАСТИНОК НА ГЛАВНОЙ СТРАНИЦЕ____________________________________________//
   
 document.addEventListener('DOMContentLoaded', function() {
@@ -102,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const image = document.createElement('img');
     // Set the path to the image or use a placeholder if the image is missing
-    image.src = vinyl.vinyl_img || 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&w=594';
+    image.src = vinyl.vinyl_img || 'https://i.ibb.co/7NfrgGH/2112-q703-032-F-m004-c7-vinyl-record-covers-mockup-realistic-removebg.png';
     image.alt = 'Vinyl Image';
 
     // Create a new div for the title
@@ -171,9 +163,8 @@ function addTrackEntry() {
     <input type="hidden" id="track-vinyl-id" name="vinyl_id">
     <input type="text" id="track-title" name="track_title" placeholder="Название песни" required><br>
     <input type="text" id="track-author" name="track_author" placeholder="Автор песни"><br>
-    <input type="text" id="track-performer" name="track_performer" placeholder="Название песни"><br>
+    <input type="text" id="track-performer" name="track_performer" placeholder="Исполнитель песни"><br>
     <input type="text" id="track-duration" name="track_duration" placeholder="Длительность песни"><br>
-    <input type="text" id="track-featuring" name="track_featuring" placeholder="Название песни"><br>
     <button type="button" class="remove-track">Удалить песню</button>
   `;
   container.appendChild(newTrackDiv);
@@ -235,7 +226,7 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     imageLink.className = 'image-link';
 
     const image = document.createElement('img');
-    image.src = vinyl.vinyl_img || 'https://cdn.vinylmeplease.com/sextant_rotm_v2_2000x.jpg?q=60&w=594';
+    image.src = vinyl.vinyl_img || 'https://i.ibb.co/7NfrgGH/2112-q703-032-F-m004-c7-vinyl-record-covers-mockup-realistic-removebg.png';
     image.alt = 'Vinyl Image';
 
     // Create a new div for the title
@@ -258,7 +249,11 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     gearIcon.innerHTML = ' &#9881'; // Используйте желаемый символ шестеренки
     gearIcon.onclick = function() { openTrackModal(vinyl.vinyl_id); };
     gridItem.appendChild(gearIcon);
+    if (grid.firstChild) {
+    grid.insertBefore(gridItem, grid.firstChild);
+  } else {
     grid.appendChild(gridItem);
+  }
 
     openTrackModal(vinyl.vinyl_id);
     
@@ -283,7 +278,6 @@ document.getElementById('add-tracks-form').addEventListener('submit', function(e
       track_author: entry.querySelector('input[name="track_author"]').value,
       track_performer: entry.querySelector('input[name="track_performer"]').value,
       track_duration: entry.querySelector('input[name="track_duration"]').value,
-      track_featuring: entry.querySelector('input[name="track_featuring"]').value,
     };
   });
 
@@ -306,7 +300,20 @@ document.getElementById('add-tracks-form').addEventListener('submit', function(e
   });
 });
 
+function formatTimeInput(event) {
+    var value = event.target.value;
+    var numbers = value.replace(/[^0-9]/g, '');
+    if (numbers.length > 4) {
+      numbers = numbers.substr(0, 4);
+    }
+    if (numbers.length > 2) {
+      event.target.value = numbers.substr(0, 2) + ':' + numbers.substr(2);
+    } else {
+      event.target.value = numbers;
+    }
+  }
 
+  document.getElementById('track-duration').addEventListener('input', formatTimeInput);
 
 
 </script>

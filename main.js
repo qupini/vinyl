@@ -105,7 +105,7 @@ app.post('/tracks', async (req, res) => {
     try {
       // Предполагается, что req.body является массивом треков
       for (const track of req.body) {
-        const { vinyl_id, track_title, track_author, track_performer, track_duration, track_featuring } = track;
+        const { vinyl_id, track_title, track_author, track_performer, track_duration } = track;
   
         if (!vinyl_id || !track_title) {
           return res.status(400).send('Vinyl ID and track title are required');
@@ -114,13 +114,12 @@ app.post('/tracks', async (req, res) => {
         
   
         const newTrack = await pool.query(
-          'INSERT INTO tracks (track_title, track_author, track_performer, track_duration, track_featuring) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+          'INSERT INTO tracks (track_title, track_author, track_performer, track_duration) VALUES ($1, $2, $3, $4) RETURNING *',
           [
             track_title,
             track_author || null,
             track_performer || null,
             track_duration || null,
-            track_featuring || null
           ]
         );
 

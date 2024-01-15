@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/text-encoding@0.7.0/lib/encoding.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-duration-picker@latest/dist/html-duration-picker.min.js"></script>
+    <script src="html-duration-picker.min.js"></script>
+
     <!-- Остальная часть head -->
     <title><%= vinyl.vinyl_title %></title>
     <style>
@@ -29,22 +32,45 @@
 <body>
     <h1><a href="/vinyl.html" >Виниловые пластинки</a></h1>
     <h1><%= vinyl.vinyl_title %></h1>
+        <% if (vinyl.vinyl_type) { %>
+    <div>Тип: <%= vinyl.vinyl_type %></div>
+        <% } %>
+        <% if (vinyl.vinyl_releaseyear) { %>
     <div>Год выпуска: <%= vinyl.vinyl_releaseyear %></div>
-    <div></div>
+        <% } %>
+        <% if (vinyl.vinyl_catalog_num) { %>
+    <div>Каталожный номер: <%= vinyl.vinyl_catalog_num %></div>
+        <% } %>
+        <% if (vinyl.vinyl_rpm) { %>
+    <div>Скорость вращения: <%= vinyl.vinyl_rpm %></div>
+        <% } %>
+        <% if (vinyl.vinyl_manufacturer) { %>
+    <div>Производитель: <%= vinyl.vinyl_manufacturer %></div>
+        <% } %>
+        <% if (vinyl.vinyl_comments) { %>
+    <div>Комментарии: <%= vinyl.vinyl_comments %></div>
+        <% } %>
+
     <!-- и так далее для всех данных о пластинке -->
     <ul id="tracklist">
         <% tracks.forEach(track => { %>
-            <li><%= track.track_title %></li>
-            <li><%= track.track_author %></li>
-            <li><%= track.track_performer %></li>
-            <li><%= track.track_duration %></li>
-            <li><%= track.track_featuring %></li>
+            <li>Название песни: <%= track.track_title %></li>
+            <% if (track.track_author) { %>
+                <li>Автор песни: <%= track.track_author %></li>
+            <% } %>
+            <% if (track.track_performer) { %>
+                <li>Исполнитель песни: <%= track.track_performer %></li>
+            <% } %>
+            <% if (track.track_duration) { %>
+                <li>Длительность песни: <%= track.track_duration %></li>
+            <% } %>
         <% }); %>
     </ul>
+    
     <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
     <button id="printQRCodeButton">Печать QR-кода</button>
     <button id="sovsearch">Поиск по сайту sovmusic.ru</button>
-
+    
     <script>
     document.getElementById('printQRCodeButton').addEventListener('click', function() {
         window.print();
