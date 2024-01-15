@@ -3,18 +3,34 @@
 <head>
     
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/html-duration-picker@latest/dist/html-duration-picker.min.js"></script>
-    <script src="html-duration-picker.min.js"></script>
-
-    <!-- Остальная часть head -->
     <title><%= vinyl.vinyl_title %></title>
     <style>
-        a {
-            font-family: 'Donpo';
+
+        @font-face {
+        font-family: "Floripa";
+        src: url('/fonts/Floripa.otf');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+        }
+
+        #tracklist {
+                list-style-type: none; /* Это свойство убирает маркеры списка */
+            }
+
+        #main_title {
+            font-family: 'Floripa';
             text-align: center;
             margin-top: 80px;
             color: rgb(0, 0, 0);
             text-decoration: none;
+        }
+
+        #main_title {
+            text-align: center;
+            width: 50%;
+            font-size: 25px;
+
         }
         
         @media print {
@@ -30,7 +46,7 @@
     </style>
 </head>
 <body>
-    <h1><a href="/vinyl.html" >Виниловые пластинки</a></h1>
+    <div id="main_title" ><h1 ><a href="/vinyl.html" >ВИНИЛОВЫЕ ПЛАСТИНКИ</a></h1></div>
     <h1><%= vinyl.vinyl_title %></h1>
         <% if (vinyl.vinyl_type) { %>
     <div>Тип: <%= vinyl.vinyl_type %></div>
@@ -52,20 +68,23 @@
         <% } %>
 
     <!-- и так далее для всех данных о пластинке -->
+    <h2>Треки</h2>
     <ul id="tracklist">
         <% tracks.forEach(track => { %>
-            <li>Название песни: <%= track.track_title %></li>
-            <% if (track.track_author) { %>
-                <li>Автор песни: <%= track.track_author %></li>
-            <% } %>
-            <% if (track.track_performer) { %>
-                <li>Исполнитель песни: <%= track.track_performer %></li>
-            <% } %>
-            <% if (track.track_duration) { %>
-                <li>Длительность песни: <%= track.track_duration %></li>
-            <% } %>
+            <li><strong><%= track.track_title %></strong><%
+                if (track.track_author) { %>, <%= track.track_author %><%
+                }
+                if (track.track_performer) { %>, <%= track.track_performer %><%
+                }
+                if (track.track_duration) { %>, <%= track.track_duration %><%
+                } %>
+            </li>
         <% }); %>
     </ul>
+    
+    
+    
+    
     
     <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
     <button id="printQRCodeButton">Печать QR-кода</button>

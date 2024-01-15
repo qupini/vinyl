@@ -3,7 +3,7 @@
 <head>
   
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Картотека виниловых пластинок</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -20,8 +20,9 @@
     </style>
 </head>
 <body>
-  <h1>Виниловые пластинки</h1>
+  <h1>ВИНИЛОВЫЕ ПЛАСТИНКИ</h1>
   <button id="add-vinyl-button">Добавить</button>
+  <button id="delete-vinyl-button">Удалить</button>
   <div class="search-container">
       <input type="text" id="search-vinyl" placeholder="Поиск пластинок...">
   </div>
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(vinyl => {
   const gridItem = document.createElement('div');
   gridItem.className = 'grid-item';
+  gridItem.setAttribute('data-id', vinyl.vinyl_id); // Добавление атрибута data-id
 
   const imageLink = document.createElement('a');
   imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
@@ -115,9 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const title = document.createElement('p');
   title.innerText = vinyl.vinyl_title;
 
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'vinyl-checkbox';
+  checkbox.value = vinyl.vinyl_id; // или другой уникальный идентификатор пластинки
+  
   titleDiv.appendChild(title);
   imageLink.appendChild(image);
   gridItem.appendChild(imageLink);
+  gridItem.appendChild(checkbox);
   gridItem.appendChild(titleDiv);
 
   document.getElementById('vinyl-grid').appendChild(gridItem);
@@ -135,8 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
       grid.innerHTML = '';
 
       data.forEach(vinyl => {
-        const gridItem = document.createElement('div');
-    gridItem.className = 'grid-item';
+  const gridItem = document.createElement('div');
+  gridItem.className = 'grid-item';
+  gridItem.setAttribute('data-id', vinyl.vinyl_id); // Добавление атрибута data-id
 
     const imageLink = document.createElement('a');
     imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
@@ -154,12 +163,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const title = document.createElement('p');
     title.innerText = vinyl.vinyl_title;
     titleDiv.appendChild(title);
-  
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'vinyl-checkbox';
+    checkbox.value = vinyl.vinyl_id; // или другой уникальный идентификатор пластинки
+    
 
     // Append the image and the new title div to the grid item
     imageLink.appendChild(image);
     gridItem.appendChild(imageLink);
     gridItem.appendChild(titleDiv);
+    gridItem.appendChild(checkbox);
     grid.appendChild(gridItem);
 
     const gearIcon = document.createElement('span');
@@ -231,6 +246,40 @@ document.getElementById('add-vinyl-button').onclick = function() {
   openModal('add-vinyl-form');
 };
 
+document.getElementById('delete-vinyl-button').addEventListener('click', function() {
+  const checkedCheckboxes = document.querySelectorAll('.vinyl-checkbox:checked');
+  const idsToDelete = Array.from(checkedCheckboxes).map(cb => cb.value);
+
+  if (idsToDelete.length > 0) {
+    if (confirm('Вы уверены, что хотите удалить выбранные пластинки?')) {
+      fetch('/delete-vinyls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: idsToDelete }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Произошла ошибка при удалении');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Удаление элементов из DOM
+        idsToDelete.forEach(id => {
+          document.querySelector(`.grid-item[data-id="${id}"]`).remove();
+        });
+        console.log(data.message);
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+      });
+    }
+  } else {
+    alert('Выберите пластинки для удаления.');
+  }
+});
 
 function openTrackModal(vinylId) {
   // Очистите контейнер песен перед открытием модального окна
@@ -270,6 +319,7 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     const grid = document.getElementById('vinyl-grid');
     const gridItem = document.createElement('div');
     gridItem.className = 'grid-item';
+    gridItem.setAttribute('data-id', vinyl.vinyl_id); // Добавление атрибута data-id
 
     const imageLink = document.createElement('a');
     imageLink.href = `/vinyl/${vinyl.vinyl_id}`;
@@ -286,13 +336,19 @@ document.getElementById('new-vinyl').addEventListener('submit', function(event) 
     const title = document.createElement('p');
     title.innerText = vinyl.vinyl_title;
     titleDiv.appendChild(title);
-  
 
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'vinyl-checkbox';
+    checkbox.value = vinyl.vinyl_id; // или другой уникальный идентификатор пластинки
+    
     // Append the image and the new title div to the grid item
     imageLink.appendChild(image);
     gridItem.appendChild(imageLink);
     gridItem.appendChild(titleDiv);
+    gridItem.appendChild(checkbox);
     grid.appendChild(gridItem);
+    
 
     const gearIcon = document.createElement('span');
     gearIcon.classList.add('gear-icon');
@@ -350,23 +406,7 @@ document.getElementById('add-tracks-form').addEventListener('submit', function(e
   });
 });
 
-function formatTimeInput(event) {
-    var value = event.target.value;
-    var numbers = value.replace(/[^0-9]/g, '');
-    if (numbers.length > 4) {
-      numbers = numbers.substr(0, 4);
-    }
-    if (numbers.length > 2) {
-      event.target.value = numbers.substr(0, 2) + ':' + numbers.substr(2);
-    } else {
-      event.target.value = numbers;
-    }
-  }
 
-
-
-
-
-
+  
 </script>
 </html>

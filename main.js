@@ -56,6 +56,23 @@ app.get('/vinyls', async (req, res) => {
   }
 });
 
+app.post('/delete-vinyls', async (req, res) => {
+  const { ids } = req.body;
+  try {
+    // Удаление связанных записей из таблицы vinyls2tracks
+    await pool.query('DELETE FROM vinyls2tracks WHERE vinyl_id = ANY($1)', [ids]);
+
+    // Удаление пластинок из таблицы vinyls
+    await pool.query('DELETE FROM vinyls WHERE vinyl_id = ANY($1)', [ids]);
+    // Отправка ответа клиенту о успешном удалении
+    res.json({ message: 'Выбранные пластинки успешно удалены.' });}
+    catch (err) {
+      console.error('Ошибка при удалении пластинок:', err);
+      res.status(500).send('Произошла ошибка при удалении пластинок.');
+    }
+  });
+
+
 
 
 app.post('/vinyls', async (req, res) => {
