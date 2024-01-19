@@ -3,8 +3,18 @@
 <head>
     
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title><%= vinyl.vinyl_title %></title>
     <style>
+
+        @media (max-width: 600px) {
+        body {
+            max-width: 600px;
+            margin: auto;
+
+        }
+
+        }
 
         @font-face {
         font-family: "Floripa";
@@ -12,25 +22,39 @@
         font-weight: normal;
         font-style: normal;
         font-display: swap;
+        letter-spacing: 2px;
         }
+
+
 
         #tracklist {
                 list-style-type: none; /* Это свойство убирает маркеры списка */
             }
 
-        #main_title {
-            font-family: 'Floripa';
+            h1 {
+            font-family: Floripa;
+            font-size: 25px;
             text-align: center;
-            margin-top: 80px;
-            color: rgb(0, 0, 0);
-            text-decoration: none;
         }
 
-        #main_title {
-            text-align: center;
-            width: 50%;
-            font-size: 25px;
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        button#printQRCodeButton {
+            width: 70px;
+            font-size: 10px;
+            text-decoration: none;
+            color: black;
+            height: 40px;
+        }
 
+        button#sovsearch {
+            width: 70px;
+            font-size: 10px;
+            height: 50px;
+            text-decoration: none;
+            color: black;
         }
         
         @media print {
@@ -44,10 +68,10 @@
             }
         }
     </style>
-</head>
+</head> 
 <body>
-    <div id="main_title" ><h1 ><a href="/vinyl.html" >ВИНИЛОВЫЕ ПЛАСТИНКИ</a></h1></div>
-    <h1><%= vinyl.vinyl_title %></h1>
+    <h1><a text-decoration: none; font-size=200px; href="/vinyl.html" >ВИНИЛОВЫЕ<br>ПЛАСТИНКИ</a></h1>
+    <h2><%= vinyl.vinyl_title %></h2>
         <% if (vinyl.vinyl_type) { %>
     <div>Тип: <%= vinyl.vinyl_type %></div>
         <% } %>
@@ -68,7 +92,7 @@
         <% } %>
 
     <!-- и так далее для всех данных о пластинке -->
-    <h2>Треки</h2>
+    <h3>Треки</h3>
     <ul id="tracklist">
         <% tracks.forEach(track => { %>
             <li><strong><%= track.track_title %></strong><%
@@ -87,7 +111,7 @@
     
     
     <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
-    <button id="printQRCodeButton">Печать QR-кода</button>
+    <button id="printQRCodeButton">Печать QR-кода</button><br>
     <button id="sovsearch">Поиск по сайту sovmusic.ru</button>
     
     <script>

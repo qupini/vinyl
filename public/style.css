@@ -1,0 +1,208 @@
+
+@media (max-width: 600px) {
+  img {
+    width: 100%; /* Полная ширина на мобильных устройствах */
+    height: auto; /* Автоматическая высота для сохранения пропорций */
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Style adjustments for the search bar and buttons */
+#search-vinyl,
+.utils-button,
+.new-vinyl-input {
+  border-radius: 40px;
+  height: 40px; /* Ensure all elements have the same height */
+  border: #1a1a1a solid;
+  padding: 0; /* Remove any padding to ensure height is consistent */
+  background: transparent;
+  color: black;
+}
+
+#search-vinyl {
+  width: 200px;
+  float: right;
+}
+
+.utils-button {
+  width: 40px; /* Or any other width as long as it is consistent */
+  cursor: pointer;
+}
+
+.new-vinyl-input {
+  height: 40px;
+  border-radius: 40px;
+  border: 2px #1a1a1a solid;
+  color: black;
+  background: white;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+/* ____________________________________________________________SUSPICIOUS_______________________________________________________*/
+
+.modal {
+  display: none; /* Скрыть модальное окно по умолчанию */
+  position: fixed; /* Оставаться на месте даже при прокрутке */
+  z-index: 1; /* Сидеть над всеми другими элементами */
+  left: 0;
+  top: 0;
+  width: 100%; /* Полная ширина */
+  height: 200%; /* Полная высота */
+  overflow: auto; /* Включить прокрутку, если нужно */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  
+  .modal-content {
+  background-color: transparent;
+  margin: 15% auto; /* 15% сверху и по центру */
+  padding: 20px;
+  color: white;
+  width: 80%; /* Можете настроить ширину */
+  animation: slideAndBounce 0.5s ease forwards; /* Применить анимацию */
+  }
+  
+  
+  .close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  }
+  
+  .close-button:hover,
+  .close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  }
+  
+  .container {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 часть для фильтров, 3 части для пластинок */
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px; /* Можете установить максимальную ширину */
+  margin: auto; /* Центрирование контейнера на странице */
+  }
+  
+  .filters {
+  grid-column: 1 / 2; /* Фильтры будут в первой колонке */
+  }
+  
+  .gear-icon {
+  cursor: pointer; /* Курсор будет меняться на указатель (активный) при наведении */
+  }
+
+  
+  .grid-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  }
+
+  .selected-image {
+    border: 2px solid red; /* Выделение для выбранной картинки */
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  
+  .grid-item img {
+    width: 100%; /* Занимает всю ширину родительского элемента */
+    height: auto; /* Высота автоматически изменяется для сохранения пропорций */
+    object-fit: cover; /* Обеспечивает заполнение контейнера без искажения пропорций */
+    border-radius: 5px;
+  }
+  
+ 
+
+.grid-item .gear-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  }
+  
+  .image-link:hover {
+  border-radius: 10px;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: ease-in-out 0.3s, box-shadow 0.15s;
+  }
+
+  h1 {
+    font-family: 'futura' !important;
+    font-weight: 900;
+    font-style: bold;
+    font-size: 50px;
+    text-align: left;
+  }
+
+  .grid-item .title {
+    font-family: 'futura';
+    font-size: 10px;
+    text-align: right !important;
+    width: 100%;
+  }
+
+  .grid-item p {
+    width: 100%;
+    margin-top: 10px;
+    font-family: 'futura';
+    text-align: right !important;
+    }
+
+
+/* ___________________________________________________________ */
+
+@keyframes slideAndBounce {
+  0% {
+    transform: translateY(100vh); /* Старт снизу страницы */
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(-40px); /* Перелет на 10px выше целевой позиции */
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0); /* Возвращение в целевую позицию */
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInBlur {
+  from {
+    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(0px);
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+
+
+
+.modal.show {
+  display: block; /* Показать фон модального окна */
+  animation: fadeInBlur 0.5s forwards; /* Анимация появления и блюра */
+}
+
+
+
+
