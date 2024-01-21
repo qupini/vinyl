@@ -29,7 +29,7 @@
 
 Установка пакетов: 
 
-`npm install express pg qrcode ejs iconv-lite`
+`npm install`
 
 
 ## Начало работы
