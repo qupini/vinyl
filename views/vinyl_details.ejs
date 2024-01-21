@@ -5,16 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title><%= vinyl.vinyl_title %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
         @media (max-width: 600px) {
+
+        }
+
         body {
-            max-width: 600px;
+            
             margin: auto;
+            width: 97%;
 
         }
 
+        * {
+        font-family: 'Courier New', Courier, monospace;
         }
+
 
         @font-face {
         font-family: "Floripa";
@@ -25,37 +33,46 @@
         letter-spacing: 2px;
         }
 
-
-
         #tracklist {
                 list-style-type: none; /* Это свойство убирает маркеры списка */
+                text-align: left;
+                padding: 20px;
+                margin-top: 0px;
             }
 
+            #tracks-header {
+                margin-top: 40px;
+        padding: 20px; /* Добавляет отступ в 20px со всех сторон */
+        margin-left: -5px;
+        margin-bottom: -20px;
+        font-size: 25px; /* Добавляет отступ от краев страницы слева и справа */
+        /* Вы можете изменить значения, если хотите другой размер отступа */
+    }
+
+    .vinyl-title {
+
+        padding: 20px; /* Добавляет отступ в 20px со всех сторон */
+        margin-left: -5px;
+        margin-bottom: 0px;
+        text-align: center;
+        font-size: 35px;
+        font-weight: bold;
+    }
+
+
             h1 {
-            font-family: Floripa;
-            font-size: 25px;
-            text-align: center;
+            font-size: 44px;
+            text-align: left;
+            font-weight: bold;
+            font-style: italic;
         }
 
         a {
             text-decoration: none;
             color: black;
         }
-        button#printQRCodeButton {
-            width: 70px;
-            font-size: 10px;
-            text-decoration: none;
-            color: black;
-            height: 40px;
-        }
 
-        button#sovsearch {
-            width: 70px;
-            font-size: 10px;
-            height: 50px;
-            text-decoration: none;
-            color: black;
-        }
+
         
         @media print {
             img {
@@ -67,53 +84,104 @@
                 display: none;
             }
         }
+
+        .buttons-container {
+            display: flex;
+            align-items: center; /* Выравнивает элементы по вертикали */
+            justify-content: center; /* Центрирует элементы внутри контейнера */
+            margin-top: 50px;
+        }
+
+        #sovsearch, #printQRCodeButton {
+            cursor: pointer;
+            text-align: center;
+            border-radius: 40px;
+            height: 60px; /* Ensure all elements have the same height */
+            border: #1a1a1a solid;
+            background: transparent;
+            color: black;
+            font-size: 15px;
+            margin: 0 10px;
+             /* Добавляет небольшой отступ с обеих сторон для разделения */
+        }
+
+        #sovsearch {
+            width: 250px;
+            font-weight: bold;
+            padding: 7px 7px 7px 7px;
+        }
+
+        #printQRCodeButton {
+            width: 60px;
+            font-size: 35px;
+            margin-top: 0; 
+            padding: 7px 7px 0px 7px;/* Убедитесь, что значение margin-top равно 0 */
+        }
+
+        #vinyl_details {
+            list-style-type: none; /* Это свойство убирает маркеры списка */
+                text-align: left;
+                padding: 20px;
+                margin-top: 0px;
+                word-break: break-word;
+                max-width: 80%;
+        
+        }
     </style>
 </head> 
 <body>
     <h1><a text-decoration: none; font-size=200px; href="/vinyl.html" >ВИНИЛОВЫЕ<br>ПЛАСТИНКИ</a></h1>
-    <h2><%= vinyl.vinyl_title %></h2>
+    <h2 class="vinyl-title"><%= vinyl.vinyl_title %></h2>
+
+    <ul id="vinyl_details">
         <% if (vinyl.vinyl_type) { %>
-    <div>Тип: <%= vinyl.vinyl_type %></div>
+    <li><strong>Тип</strong>: <%= vinyl.vinyl_type %></li>
         <% } %>
         <% if (vinyl.vinyl_releaseyear) { %>
-    <div>Год выпуска: <%= vinyl.vinyl_releaseyear %></div>
+    <li><strong>Год выпуска:</strong> <%= vinyl.vinyl_releaseyear %></li>
         <% } %>
         <% if (vinyl.vinyl_catalog_num) { %>
-    <div>Каталожный номер: <%= vinyl.vinyl_catalog_num %></div>
+    <li><strong>Каталожный номер:</strong> <%= vinyl.vinyl_catalog_num %></li>
         <% } %>
         <% if (vinyl.vinyl_rpm) { %>
-    <div>Скорость вращения: <%= vinyl.vinyl_rpm %></div>
+    <li><strong>Скорость вращения:</strong> <%= vinyl.vinyl_rpm %></li>
         <% } %>
         <% if (vinyl.vinyl_manufacturer) { %>
-    <div>Производитель: <%= vinyl.vinyl_manufacturer %></div>
+    <li><strong>Производитель:</strong> <%= vinyl.vinyl_manufacturer %></li>
         <% } %>
         <% if (vinyl.vinyl_comments) { %>
-    <div>Комментарии: <%= vinyl.vinyl_comments %></div>
+    <li><strong>Комментарии:</strong> <%= vinyl.vinyl_comments %></li>
         <% } %>
+        </ul>
 
     <!-- и так далее для всех данных о пластинке -->
-    <h3>Треки</h3>
-    <ul id="tracklist">
-        <% tracks.forEach(track => { %>
-            <li><strong><%= track.track_title %></strong><%
-                if (track.track_author) { %>, <%= track.track_author %><%
-                }
-                if (track.track_performer) { %>, <%= track.track_performer %><%
-                }
-                if (track.track_duration) { %>, <%= track.track_duration %><%
-                } %>
-            </li>
-        <% }); %>
-    </ul>
+    <% if (tracks && tracks.length > 0) { %>
+        <h3 id="tracks-header">Треки</h3>
+        <ul id="tracklist">
+            <% tracks.forEach(track => { %>
+                <li><strong><%= track.track_title %></strong><%
+                    if (track.track_author) { %>, <%= track.track_author %><%
+                    }
+                    if (track.track_performer) { %>, <%= track.track_performer %><%
+                    }
+                    if (track.track_duration) { %>, <%= track.track_duration %><%
+                    } %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
     
     
     
     
     
     <img hidden src="<%= vinyl.vinyl_qr %>" alt="QR Code" />
-    <button id="printQRCodeButton">Печать QR-кода</button><br>
-    <button id="sovsearch">Поиск по сайту sovmusic.ru</button>
-    
+
+    <div class="buttons-container">
+    <button id="printQRCodeButton"><i class="fa fa-qrcode" aria-hidden="true"></i></button>
+    <button id="sovsearch"><i class="fa fa-search" aria-hidden="true"></i> Поиск по сайту sovmusic.ru</button>
+    </div>
+        
     <script>
     document.getElementById('printQRCodeButton').addEventListener('click', function() {
         window.print();

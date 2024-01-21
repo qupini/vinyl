@@ -6,21 +6,47 @@
   }
 }
 
+body {
+  width: 97%;
+  margin: auto;
+}
+
+* {
+  font-family: 'Courier New', Courier, monospace;
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
+.dimmed {
+  opacity: 0.5;
+}
+
 /* Style adjustments for the search bar and buttons */
 #search-vinyl,
 .utils-button,
-.new-vinyl-input {
-  border-radius: 40px;
+.new-vinyl-input, .new-track-input, #add-more-tracks, #confirm-tracks-add {
+  border-radius: 20px;
   height: 40px; /* Ensure all elements have the same height */
   border: #1a1a1a solid;
   padding: 0; /* Remove any padding to ensure height is consistent */
   background: transparent;
+  color: black;
+  padding: 5px 5px 5px 5px;
+  resize: none;
+  outline: none;
+}
+
+#search-vinyl,
+.new-vinyl-input, .new-track-input {
+  padding: 5px 5px 5px 10px;
+}
+
+.option {
+  background-color: white;
   color: black;
 }
 
@@ -32,20 +58,63 @@
 .utils-button {
   width: 40px; /* Or any other width as long as it is consistent */
   cursor: pointer;
+  text-align: center;
 }
 
-.new-vinyl-input {
-  height: 40px;
-  border-radius: 40px;
-  border: 2px #1a1a1a solid;
-  color: black;
-  background: white;
+.new-vinyl-input, .new-track-input {
   margin-top: 2px;
   margin-bottom: 2px;
   width: 100%;
+  border: 2px white solid;
 }
 
+#vinyl-comments {
+  padding-left: 10px;
+  padding-top: 5px;
+  border-radius: 20px;
+  height: 80px;
+  overflow: hidden;
+}
+
+
+.remove-track {
+  border-radius: 20px;
+  height: 40px; /* Ensure all elements have the same height */
+  border: #1a1a1a solid;
+  padding: 0; /* Remove any padding to ensure height is consistent */
+  background: transparent;
+  color: black;
+  padding: 5px 5px 5px 5px;
+  resize: none;
+  outline: none;
+  float: right;
+}
 /* ____________________________________________________________SUSPICIOUS_______________________________________________________*/
+
+
+#confirm-vinyl-add, .remove-track, #add-more-tracks, #confirm-tracks-add {
+  width: 40px;
+  border: 2px white solid !important;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.remove-track, #add-more-tracks, #confirm-tracks-add {
+  margin-top: 2px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#confirm-vinyl-add:hover, .remove-track:hover, #add-more-tracks:hover, #confirm-tracks-add:hover {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none; /* Disables clicking */
+  opacity: 0.6; /* Fades the button */
+}
+
 
 .modal {
   display: none; /* Скрыть модальное окно по умолчанию */
@@ -54,11 +123,21 @@
   left: 0;
   top: 0;
   width: 100%; /* Полная ширина */
-  height: 200%; /* Полная высота */
-  overflow: auto; /* Включить прокрутку, если нужно */
+  height: 100%; /* Полная высота */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+.new-vinyl-input, .new-track-input {
+  background: transparent !important;
+  color: white !important;
+  
+}
+
+  .new-vinyl-input::placeholder, .new-track-input::placeholder {
+    color: rgba(255, 255, 255, 0.8);
   }
 
   
@@ -69,11 +148,19 @@
   color: white;
   width: 80%; /* Можете настроить ширину */
   animation: slideAndBounce 0.5s ease forwards; /* Применить анимацию */
+  max-height: 80vh; /* 80% от высоты видимой части экрана */
+  overflow-y: auto; /* Включить вертикальную прокрутку если контент превышает max-height */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none; 
+  }
+
+  .modal-content::-webkit-scrollbar {
+    display: none;
   }
   
   
   .close-button {
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.8);
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -81,7 +168,7 @@
   
   .close-button:hover,
   .close-button:focus {
-  color: black;
+  color: white;
   text-decoration: none;
   cursor: pointer;
   }
@@ -99,9 +186,7 @@
   grid-column: 1 / 2; /* Фильтры будут в первой колонке */
   }
   
-  .gear-icon {
-  cursor: pointer; /* Курсор будет меняться на указатель (активный) при наведении */
-  }
+  
 
   
   .grid-item {
@@ -112,7 +197,11 @@
   }
 
   .selected-image {
-    border: 2px solid red; /* Выделение для выбранной картинки */
+    border: 1px solid red; /* Выделение для выбранной картинки */
+    border-radius: 10px;
+    transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: ease-in-out 0.3s, box-shadow 0.15s;
   }
   
   .hidden {
@@ -126,13 +215,27 @@
     object-fit: cover; /* Обеспечивает заполнение контейнера без искажения пропорций */
     border-radius: 5px;
   }
-  
+
+  .vinyl-title {
+    position: relative;
+    bottom: 5vh; /* Distance from the bottom of the container */
+    right: 10px; /* Distance from the right of the container */
+    color: black; /* Or any color that is visible on your image */
+    padding: 5px; /* Optional: Adds some padding around the text */
+  }
  
 
 .grid-item .gear-icon {
   position: absolute;
-  top: 10px;
+  top: 20px;
   right: 10px;
+  cursor: pointer;
+  }
+
+  .image-link {
+    transition: opacity 0.2s ease-in-out;
+    border-radius: 10px;
+    margin-bottom: 2px;
   }
   
   .image-link:hover {
@@ -143,25 +246,22 @@
   }
 
   h1 {
-    font-family: 'futura' !important;
-    font-weight: 900;
-    font-style: bold;
-    font-size: 50px;
+    font-size: 44px;
     text-align: left;
+    font-weight: bold;
+    font-style: italic;
   }
 
   .grid-item .title {
-    font-family: 'futura';
-    font-size: 10px;
-    text-align: right !important;
+    font-size: 20px;
+    text-align: right;
     width: 100%;
   }
 
   .grid-item p {
     width: 100%;
     margin-top: 10px;
-    font-family: 'futura';
-    text-align: right !important;
+    text-align: right;
     }
 
 
@@ -194,9 +294,6 @@
     background-color: rgba(0, 0, 0, 0.5);
   }
 }
-
-
-
 
 .modal.show {
   display: block; /* Показать фон модального окна */
